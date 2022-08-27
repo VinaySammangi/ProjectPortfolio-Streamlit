@@ -18,7 +18,6 @@ from PIL import Image
 from st_aggrid import GridOptionsBuilder, AgGrid
 from StockpriceForecasting.api_stockprice import *
 from RecommendationEngine.content_based import *
-from icrawler.builtin import GoogleImageCrawler
 
 BACKGROUND_COLOR = 'white'
 COLOR = 'black'
