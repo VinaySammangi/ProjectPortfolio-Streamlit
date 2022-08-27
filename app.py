@@ -77,16 +77,18 @@ st.markdown("""
         </style>
         """, unsafe_allow_html=True)
 
-st.markdown("<h1 width: fit-content; style='text-align: center; color: white; background-color:LightSkyBlue;'>Project Portfolio - Vinay Sammangi</h1>", unsafe_allow_html=True)        
 
 st.markdown("""
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             </style>
-            """, unsafe_allow_html=True) 
-
+            """, unsafe_allow_html=True)
+st.markdown("<i><text style='text-align: left; color:orange;'> Please view this website on either desktop or laptop</text></i>",unsafe_allow_html=True)
+st.markdown("<h1 width: fit-content; style='text-align: center; color: white; background-color:LightSkyBlue;'>Project Portfolio - Vinay Sammangi</h1>", unsafe_allow_html=True)        
 set_page_container_style()
+
+
 
 def _stockpriceforecasting():
     st1_11, st1_12, st1_13 = st.columns([2,12,1])
