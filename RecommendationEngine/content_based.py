@@ -47,22 +47,17 @@ def get_recommendations_new(title,n,features,movies_data):
         results_df: returns a dataframe containing the list of recommended movies with rowids
         and their similarity score
     """ 
-    print(1)
     all_features = ['title','director','cast','listed_in','country']
     
     movies_data_subset1 = clean_data(movies_data,all_features)
     movies_data_subset2 = clean_data(movies_data,features)
-    print(2)
     
     tfidf = TfidfVectorizer(stop_words='english')
-    print(movies_data_subset2)
     tfidf_matrix = tfidf.fit_transform(movies_data_subset2['main_column'])
-    print(3)
    
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
     movies_data_subset1 = movies_data_subset1.reset_index()
     indices = pd.Series(movies_data_subset1.index, index=movies_data_subset1['title'])
-    print(4)
     title = title.replace(' ','').lower()
     idx = indices[title]
 

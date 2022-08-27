@@ -18,6 +18,7 @@ from PIL import Image
 from st_aggrid import GridOptionsBuilder, AgGrid
 from StockpriceForecasting.api_stockprice import *
 from RecommendationEngine.content_based import *
+import time
 
 BACKGROUND_COLOR = 'white'
 COLOR = 'black'
@@ -86,7 +87,7 @@ st.markdown("""
             </style>
             """, unsafe_allow_html=True)
 st.markdown("<i><text style='text-align: left; color:orange;'> Please view this website on either desktop or laptop</text></i>",unsafe_allow_html=True)
-st.markdown("<h1 width: fit-content; style='text-align: center; color: white; background-color:LightSkyBlue;'>Project Portfolio - Vinay Sammangi</h1>", unsafe_allow_html=True)        
+st.markdown("<h1 width: fit-content; style='text-align: center; color: white; background-color:#0083b8;'>Project Portfolio - Vinay Sammangi</h1>", unsafe_allow_html=True)        
 set_page_container_style()
 
 def _stockpriceforecasting():
@@ -95,16 +96,17 @@ def _stockpriceforecasting():
     st1_13 = st1_13.empty()
     st1_21, st1_23 = st.columns([1,1],gap="small")
     st1_31, st1_32, st1_33 = st.columns([1,20,1])
-    
+
     ticker_list = ["AAPL","IBM","NVDA","INTC","CSCO","MSFT","INFY","ORCL","CRM","UBER"]
+    longNames = ["Apple Inc.","International Business Machines Corporation","NVIDIA Corporation","Intel Corporation","Cisco Systems, Inc.","Microsoft Corporation","Infosys Limited","Oracle Corporation","Salesforce, Inc.","Uber Technologies, Inc."]
     tickerSymbol = st1_11.selectbox('Stock ticker', ticker_list)
     
     tickerData = yf.Ticker(tickerSymbol)
     technical_response = json.loads(technical_forecast(tickerSymbol))
     temp_df = pd.DataFrame(technical_response["DataFrame"])
     temp_df["Datetime"] = pd.to_datetime(temp_df["Datetime"])
-    string_logo = '<img src=%s height="50" align="right">' % tickerData.info['logo_url']
-    string_name = tickerData.info['longName']
+    #string_logo = '<img src=%s height="50" align="right">' % tickerData.info['logo_url']
+    string_name = longNames[ticker_list.index(tickerSymbol)]#tickerData.info['longName']
     forecast_header1 = st1_12.empty()
     forecast_header1.markdown("<h2 style='text-align: center; color: gray;'>"+string_name+"</h2",unsafe_allow_html=True)
     #st1_13.markdown(string_logo,unsafe_allow_html=True)
@@ -121,6 +123,7 @@ def _stockpriceforecasting():
     dir_color = "black"
     direction = "Wait till next day"
     # if (last_hour>=0) or (last_hour==15 and last_minute==0):
+
     if (last_hour>9 and last_hour < 15) or (last_hour==15 and last_minute==0):
         forecast_ = technical_response["Forecast"]
         forecast_time = temp_df['Datetime'].iloc[-1]+pd.to_timedelta(30, unit='m')
@@ -150,9 +153,9 @@ def _stockpriceforecasting():
     dt_obs = [d.strftime("%Y-%m-%d") for d in temp_df['Datetime']]
     dt_breaks = [d for d in dt_all.strftime("%Y-%m-%d").tolist() if not d in dt_obs]
     fig.update_xaxes(rangebreaks=[dict(values=dt_breaks)])
-    fig.update_layout(plot_bgcolor="rgb(245,245,245)")
+    #fig.update_layout(plot_bgcolor="rgb(245,245,245)")
     st1_21.plotly_chart(fig,use_container_width=True)
-    
+
     sentiment_response = json.loads(sentiment_forecast(tickerSymbol))
     tweets_data = pd.DataFrame(sentiment_response["DataFrame"])
     text_conf = round(sentiment_response["ForecastConfidence"])
@@ -200,8 +203,8 @@ def _stockpriceforecasting():
         #forecast_header1.markdown("<h3 style='text-align: right; color: black;'>"+string_name+"Overall Forecast: </h3",unsafe_allow_html=True)
         forecast_header1.markdown("<h2 style='text-align: center; color: "+final_color+";'>"+string_name+" Overall Forecast: "+final_forecast+"</h2>",unsafe_allow_html=True)
     else:
-        st1_32.markdown("<i> <h4 style='text-align: center; color:gray;'> Forecasts are generated between 10:00 and 15:30 EST during the market open days </h4> </i>",unsafe_allow_html=True)
-
+        st1_32.markdown("<i> <h5 style='text-align: center; color:gray;'> Forecasts are generated between 10:00 and 15:30 EST during the market open days </h5> </i>",unsafe_allow_html=True)
+    
 
 def _nlp_applications():
     pass
@@ -222,15 +225,15 @@ def _netflix_recommendationengine():
     movie = st3_11.selectbox('Enter your favorite movie',movies_data["title"],)
     n_movies = st3_12.select_slider('Movies to recommend?',options=range(1,11))
     selected_variables = st3_13.multiselect('Variables to consider', ['title','director','cast','listed_in','country'],default=['title','director','cast','listed_in','country'])
+    st3_21, st3_22 = st.columns([2,2])                
    
     # Perform top-10 movie recommendation generation
     if st3_14.button("Recommend"):
         top_recommendations = content_model(movie=movie,top_n = n_movies,features=selected_variables,movies_data=movies_data)
-        st.markdown("<h3 width: fit-content; style='text-align: left; color: gray;'>We think you'll like the below movie(s):</h3>", unsafe_allow_html=True)
+        st3_22.markdown("<h3 width: fit-content; style='text-align: left; color: gray;'>We think you'll like the below movie(s):</h3>", unsafe_allow_html=True)
         for i,j in enumerate(top_recommendations):
-            st.markdown(str(i+1)+'. '+j)
-                
-    st.image('imgs/netflix_recommendation.png',use_column_width=True)
+            st3_22.markdown(str(i+1)+'. '+j)
+    st3_21.image('imgs/netflix_recommendation.png',use_column_width=True)
 
     
 tab1, tab2, tab3, tab4 = st.tabs(["1. Netflix Recommendation System","2. NLP Applications","3. Stock Price Forecasting Tool","4. NASA - Geospatial Analysis"])
