@@ -78,12 +78,12 @@ st.markdown("""
 
 st.markdown("<h1 width: fit-content; style='text-align: center; color: white; background-color:LightSkyBlue;'>Project Portfolio - Vinay Sammangi</h1>", unsafe_allow_html=True)        
 
-# st.markdown("""
-#             <style>
-#             #MainMenu {visibility: hidden;}
-#             footer {visibility: hidden;}
-#             </style>
-#             """, unsafe_allow_html=True) 
+st.markdown("""
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """, unsafe_allow_html=True) 
 
 set_page_container_style()
 
