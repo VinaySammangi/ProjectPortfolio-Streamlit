@@ -33,7 +33,7 @@ from pytz import timezone
 import time
 import pytz
 
-pkl_folder = "Stockprice Forecasting/pkl/"
+pkl_folder = "StockpriceForecasting/pkl/"
 ticker_pattern = re.compile(r'(^\$[A-Z]+|^\$ES_F)')
 ht_pattern = re.compile(r'#\w+')
 

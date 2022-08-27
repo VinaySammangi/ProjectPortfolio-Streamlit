@@ -16,7 +16,9 @@ import warnings
 warnings.filterwarnings("ignore")
 from PIL import Image
 from st_aggrid import GridOptionsBuilder, AgGrid
-from api_stockprice import *
+from StockpriceForecasting.api_stockprice import *
+from RecommendationEngine.content_based import *
+from icrawler.builtin import GoogleImageCrawler
 
 BACKGROUND_COLOR = 'white'
 COLOR = 'black'
@@ -87,8 +89,6 @@ st.markdown("""
 st.markdown("<i><text style='text-align: left; color:orange;'> Please view this website on either desktop or laptop</text></i>",unsafe_allow_html=True)
 st.markdown("<h1 width: fit-content; style='text-align: center; color: white; background-color:LightSkyBlue;'>Project Portfolio - Vinay Sammangi</h1>", unsafe_allow_html=True)        
 set_page_container_style()
-
-
 
 def _stockpriceforecasting():
     st1_11, st1_12, st1_13 = st.columns([2,12,1])
@@ -207,18 +207,43 @@ def _stockpriceforecasting():
 def _nlp_applications():
     pass
 
-def _netflix_recommendationengine():
-    pass
+@st.cache(allow_output_mutation=True)
+def _load_netflix_movies():
+    return pd.read_csv("RecommendationEngine/movies_data.csv")
 
-tab1, tab2, tab3, tab4 = st.tabs(["1. Stock Price Forecasting Tool","2. NLP Applications","3. Netflix Recommendation System","4. NASA - Geospatial Analysis"])
+def _netflix_recommendationengine():
+    # Data Loading
+    movies_data = _load_netflix_movies()
+    # Header contents
+    # st.markdown("<h2 width: fit-content; style='text-align: center; color: black;'>Netflix Movie Recommendation System</h2>", unsafe_allow_html=True)        
+
+    st3_11, st3_12, st3_13, st3_14 = st.columns([3,2,5,1])
+    
+    # User-based preferences
+    movie = st3_11.selectbox('Enter your favorite movie',movies_data["title"],)
+    n_movies = st3_12.select_slider('Movies to recommend?',options=range(1,11))
+    selected_variables = st3_13.multiselect('Variables to consider', ['title','director','cast','listed_in','country'],default=['title','director','cast','listed_in','country'])
+   
+    # Perform top-10 movie recommendation generation
+    if st3_14.button("Recommend"):
+        top_recommendations = content_model(movie=movie,top_n = n_movies,features=selected_variables,movies_data=movies_data)
+        st.markdown("<h3 width: fit-content; style='text-align: left; color: gray;'>We think you'll like the below movie(s):</h3>", unsafe_allow_html=True)
+        for i,j in enumerate(top_recommendations):
+            st.markdown(str(i+1)+'. '+j)
+                
+    st.image('imgs/netflix_recommendation.png',use_column_width=True)
+
+    
+tab1, tab2, tab3, tab4 = st.tabs(["1. Netflix Recommendation System","2. NLP Applications","3. Stock Price Forecasting Tool","4. NASA - Geospatial Analysis"])
 
 with tab1:
-    _stockpriceforecasting()
+    _netflix_recommendationengine()
     
 with tab2:
     _nlp_applications()
     
 with tab3:
-    _netflix_recommendationengine()
+    # pass
+    _stockpriceforecasting()
 
        
