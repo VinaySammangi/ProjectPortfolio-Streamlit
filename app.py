@@ -25,9 +25,9 @@ nltk.download('punkt')
 from textblob import TextBlob
 import spacy
 from spacy import displacy
-
 import en_core_web_sm
 nlp = en_core_web_sm.load()
+print(1)
 
 HTML_WRAPPER = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem">{}</div>"""
 
