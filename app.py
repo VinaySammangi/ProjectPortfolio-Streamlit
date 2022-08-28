@@ -21,15 +21,21 @@ from RecommendationEngine.content_based import *
 import time
 import pickle
 import nltk
-nltk.download('punkt')
 from textblob import TextBlob
 import spacy
 from spacy import displacy
 import en_core_web_sm
+#new packages
+from transformers import pipeline
+from transformers import BlenderbotTokenizer
+from transformers import BlenderbotForConditionalGeneration
+from streamlit_chat import message as st_message
+
+nltk.download('punkt')
 nlp = en_core_web_sm.load()
-print(1)
 
 HTML_WRAPPER = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem">{}</div>"""
+HTML_WRAPPER_textsum = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem; color:green">{}</div>"""
 
 BACKGROUND_COLOR = 'white'
 COLOR = 'black'
@@ -267,33 +273,107 @@ def _sentimentanalysis():
     
     st.write(blob.sentiment)
 
-def _toxicityranking():
-    pass
-
-def _chatbot():
-    pass
-
-def _textsummarizer():
-    pass
-
 def analyze_text(text):
 	return nlp(text)
 
 def _nerproject():
-    st.subheader("Named Entity Recog with Spacy")
-    raw_text = st.text_area("Enter Text Here","Type Here")
+    raw_text = st.text_area("Input Here","Ahead of India's much-anticipated Asia Cup 2022 opener against Pakistan, head coach Rahul Dravid is set to join the squad. The former India captain, who is expected to reach Dubai late on Saturday (August 27) night, will be in the dressing room during the clash against the arch-rivals. Cricbuzz also understands that VVS Laxman, who was named interim coach in the absence of Dravid, will fly back home. It is learnt that his return flight is on Saturday night itself and he will not be with the side for their tournament opener on Sunday. He is returning home tonight, said a source in Dubai.",height=30)
     if st.button("Analyze"):
         docx = analyze_text(raw_text)
         html = displacy.render(docx,style="ent")
         html = html.replace("\n\n","\n")
         st.write(HTML_WRAPPER.format(html),unsafe_allow_html=True)
-        
-    # raw_text = st.text_area("Enter Text","")
-    # if raw_text != "":
-    #     docx = nlp(raw_text)
-    #     print(docx)
-    #     spacy_streamlit.visualize_ner(docx, labels = nlp.get_pipe('ner').labels)
 
+@st.cache(allow_output_mutation=True)
+def load_summarizer():
+    model = pipeline("summarization")
+    return model
+
+def generate_chunks(inp_str):
+    max_chunk = 500
+    inp_str = inp_str.replace('.', '.<eos>')
+    inp_str = inp_str.replace('?', '?<eos>')
+    inp_str = inp_str.replace('!', '!<eos>')
+    
+    sentences = inp_str.split('<eos>')
+    current_chunk = 0 
+    chunks = []
+    for sentence in sentences:
+        if len(chunks) == current_chunk + 1: 
+            if len(chunks[current_chunk]) + len(sentence.split(' ')) <= max_chunk:
+                chunks[current_chunk].extend(sentence.split(' '))
+            else:
+                current_chunk += 1
+                chunks.append(sentence.split(' '))
+        else:
+            chunks.append(sentence.split(' '))
+
+    for chunk_id in range(len(chunks)):
+        chunks[chunk_id] = ' '.join(chunks[chunk_id])
+    return chunks
+
+def _textsummarizer():
+    summarizer = load_summarizer()
+    st3_31, st3_32, st3_33 = st.columns([1,1,2]) 
+    min = st3_31.slider('Minimum words in the summary', 10, 450, step=10, value=50)
+    max = st3_32.slider('Maximum words in the summary', 50, 500, step=10, value=150)
+    sentence = st.text_area('Please paste your article :',"Ahead of India's much-anticipated Asia Cup 2022 opener against Pakistan, head coach Rahul Dravid is set to join the squad. The former India captain, who is expected to reach Dubai late on Saturday (August 27) night, will be in the dressing room during the clash against the arch-rivals. Cricbuzz also understands that VVS Laxman, who was named interim coach in the absence of Dravid, will fly back home. It is learnt that his return flight is on Saturday night itself and he will not be with the side for their tournament opener on Sunday. He is returning home tonight, said a source in Dubai. Laxman's presence in Dubai was necessitated as Dravid, who tested positive for COVID-19, could not travel with the Indian side on August 23. Mr. Laxman has linked up with the squad in Dubai along with vice-captain Mr. KL Rahul, Mr. Deepak Hooda and Mr. Avesh Khan, who travelled from Harare, the Board of Control for Cricket in India (BCCI) had said on Laxman's arrival in Dubai from Harare while naming him the interim coach.",height=30)
+    button = st.button("Summarize")    
+    with st.spinner("Generating Summary.."):
+        if button and sentence:
+            chunks = generate_chunks(sentence)
+            res = summarizer(chunks,
+                             max_length=max, 
+                             min_length=min
+                             )
+            text = ' '.join([summ['summary_text'] for summ in res])
+            st.write(HTML_WRAPPER_textsum.format(text),unsafe_allow_html=True)            
+
+@st.experimental_singleton
+def get_models():
+    # it may be necessary for other frameworks to cache the model
+    # seems pytorch keeps an internal state of the conversation
+    model_name = "facebook/blenderbot-400M-distill"
+    tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
+    model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
+    return tokenizer, model
+
+def _chatbot():
+    st3_41, st3_42 = st.columns([9,1]) 
+    if "history" not in st.session_state:
+        st.session_state.history = []
+        
+    def generate_answer():
+        tokenizer, model = get_models()
+        user_message = st.session_state.input_text
+        inputs = tokenizer(st.session_state.input_text, return_tensors="pt")
+        result = model.generate(**inputs)
+        message_bot = tokenizer.decode(
+            result[0], skip_special_tokens=True
+        )  # .replace("<s>", "").replace("</s>", "")
+    
+        st.session_state.history.append({"message": user_message, "is_user": True})
+        st.session_state.history.append({"message": message_bot, "is_user": False})
+    
+    
+    st3_41.text_input("Talk to the bot",key="input_text", on_change=generate_answer)
+    click_ = st3_42.button('Restart chat')    
+    if click_:
+        st.session_state.history = []
+
+        
+    i = 0
+    for chat in st.session_state.history[::-1]:
+        st_message(**chat,key="chatbot_"+str(i))  # unpacking
+        i+=1    
+    
+        
+def _machinetranslation():
+    pass
+
+def _toxicityranking():
+    pass
+        
 def _nlp_applications():
     with st.expander("1.1. Netflix Recommendation System"):
         st.caption("""
@@ -305,24 +385,30 @@ def _nlp_applications():
         _sentimentanalysis()
         
     with st.expander("1.3. Named Entity Recognition"):
-        st.markdown("""
-                 <i>A bidirectional LSTM-CNN-CRF model for sequence labeling trained on the CoNLL named entity recognition dataset</i>
+        st.caption("""
+                 <i>Named entity recognition (NER) - sometimes referred to as entity chunking, extraction, or identification — is the task of identifying and categorizing key information (entities) in text.</i>
         """,unsafe_allow_html=True)
         _nerproject()
         
     with st.expander("1.4. Text Summarizer"):
-        st.markdown("""
-                 <i>A bidirectional LSTM-CNN-CRF model for sequence labeling trained on the CoNLL named entity recognition dataset</i>
+        st.caption("""
+                 <i>Summarization is the task of producing a shorter version of a document while preserving its important information. Some models can extract text from the original input, while other models (used here) can generate entirely new text.</i>
         """,unsafe_allow_html=True)
         _textsummarizer()
 
     with st.expander("1.5. Neural Chatbot"):
-        st.markdown("""
-                 <i>A Seq2Seq model with attention mechanism trained on the Cornell movie dialog corpus</i>
+        st.caption("""
+                 <i>Streamlit-Chat is a simple component, which provides a chat-app like interface, which makes a chatbot deployed on Streamlit have a cool UI.</i>
         """,unsafe_allow_html=True)
         _chatbot()
     
-    with st.expander("1.6. Severity of Toxic Comments"):
+    with st.expander("1.6. Machine Translation"):
+        st.markdown("""
+                 <i>A Seq2Seq model with attention mechanism trained on the Cornell movie dialog corpus</i>
+        """,unsafe_allow_html=True)
+        _machinetranslation()
+
+    with st.expander("1.7. Severity of Toxic Comments"):
         st.markdown("""
                  <i>An ensemble model comprising DistilBERT and Ridge to rank relative ratings of toxicity between comments</i>
         """,unsafe_allow_html=True)
