@@ -13,4 +13,4 @@ yfinance==0.1.70
 scikit-learn==1.1.1
 textblob==0.17.1
 spacy==3.4.1
-en_core_web_sm==3.4.0
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.4.0/en_core_web_sm-3.4.0-py3-none-any.whl
