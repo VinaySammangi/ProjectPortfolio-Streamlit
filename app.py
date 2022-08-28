@@ -335,7 +335,9 @@ def _textsummarizer():
 def get_chat_models():
     # it may be necessary for other frameworks to cache the model
     # seems pytorch keeps an internal state of the conversation
+    print(00)
     model_name = "facebook/blenderbot-400M-distill"
+    print(0)
     tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
     print(1)
     model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
@@ -344,6 +346,7 @@ def get_chat_models():
 
 
 def _chatbot():
+    print(00000)
     # st3_41, st3_42 = st.columns([9,1]) 
     def generate_answer():
         print("chat models start")
@@ -362,8 +365,11 @@ def _chatbot():
         st.session_state.chat_history.append({"message": user_message, "is_user": True})
         st.session_state.chat_history.append({"message": message_bot, "is_user": False})
 
+    print(0000)
+
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
+    print(000)
 
     st.text_input("Talk to the bot",key="input_text", on_change=generate_answer)
     # click_ = st3_42.button('Restart chat')    
