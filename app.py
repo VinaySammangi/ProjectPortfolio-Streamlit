@@ -335,9 +335,9 @@ def _textsummarizer():
 def get_chat_models():
     # it may be necessary for other frameworks to cache the model
     # seems pytorch keeps an internal state of the conversation
-    print(00)
+    print("00")
     model_name = "facebook/blenderbot-400M-distill"
-    print(0)
+    print("0")
     tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
     print(1)
     model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
@@ -345,32 +345,32 @@ def get_chat_models():
     return tokenizer, model
 
 
+chatbot_tokenizer, chatbot_model = get_chat_models()
 def _chatbot():
-    print(00000)
+    print("00000")
     # st3_41, st3_42 = st.columns([9,1]) 
     def generate_answer():
         print("chat models start")
-        tokenizer, model = get_chat_models()
         print("chat models end")
         user_message = st.session_state.input_text
         print(3)
-        inputs = tokenizer(st.session_state.input_text, return_tensors="pt")
+        inputs = chatbot_tokenizer(st.session_state.input_text, return_tensors="pt")
         print(4)
-        result = model.generate(**inputs)
+        result = chatbot_model.generate(**inputs)
         print(5)
-        message_bot = tokenizer.decode(
+        message_bot = chatbot_tokenizer.decode(
             result[0], skip_special_tokens=True
         )  # .replace("<s>", "").replace("</s>", "")
         print(6)    
         st.session_state.chat_history.append({"message": user_message, "is_user": True})
         st.session_state.chat_history.append({"message": message_bot, "is_user": False})
 
-    print(0000)
+    print("0000")
 
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
-    print(000)
-
+    print("000")
+    
     st.text_input("Talk to the bot",key="input_text", on_change=generate_answer)
     # click_ = st3_42.button('Restart chat')    
     # if click_:
@@ -413,8 +413,7 @@ def _nlp_applications():
         st.caption("""
                  <i>Streamlit-Chat is a simple component, which provides a chat-app like interface, which makes a chatbot deployed on Streamlit have a cool UI.</i>
         """,unsafe_allow_html=True)
-        pass
-        # _chatbot()
+        _chatbot()
     
     with st.expander("1.6. Machine Translation"):
         st.markdown("""
