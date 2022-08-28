@@ -329,7 +329,8 @@ def _textsummarizer():
             text = ' '.join([summ['summary_text'] for summ in res])
             st.write(HTML_WRAPPER_textsum.format(text),unsafe_allow_html=True)            
 
-@st.experimental_singleton
+# @st.experimental_singleton
+@st.cache(allow_output_mutation=True)
 def get_models():
     # it may be necessary for other frameworks to cache the model
     # seems pytorch keeps an internal state of the conversation
