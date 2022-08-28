@@ -345,11 +345,20 @@ def get_chat_models():
     return tokenizer, model
 
 
-chatbot_tokenizer, chatbot_model = get_chat_models()
 def _chatbot():
     print("00000")
-    # st3_41, st3_42 = st.columns([9,1]) 
-    def generate_answer():
+    chatbot_tokenizer, chatbot_model = get_chat_models()
+    st3_41, st3_42 = st.columns([9,1]) 
+        
+    print("0000")
+
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+    print("000")
+    
+    st3_41.text_input("Talk to the bot",key="input_text")
+    click_ = st3_42.button('Run')    
+    if click_:
         print("chat models start")
         print("chat models end")
         user_message = st.session_state.input_text
@@ -364,17 +373,7 @@ def _chatbot():
         print(6)    
         st.session_state.chat_history.append({"message": user_message, "is_user": True})
         st.session_state.chat_history.append({"message": message_bot, "is_user": False})
-
-    print("0000")
-
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
-    print("000")
-    
-    st.text_input("Talk to the bot",key="input_text", on_change=generate_answer)
-    # click_ = st3_42.button('Restart chat')    
-    # if click_:
-    #     st.session_state.history = []    
+                  
     i = 0
     for chat in st.session_state.chat_history[::-1]:
         st_message(**chat,key="chatbot_"+str(i))  # unpacking
