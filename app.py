@@ -313,22 +313,21 @@ def generate_chunks(inp_str):
     return chunks
 
 def _textsummarizer():
-    pass
-    # summarizer = load_summarizer()
-    # st3_31, st3_32, st3_33 = st.columns([1,1,2]) 
-    # min = st3_31.slider('Minimum words in the summary', 10, 450, step=10, value=50)
-    # max = st3_32.slider('Maximum words in the summary', 50, 500, step=10, value=150)
-    # sentence = st.text_area('Please paste your article :',"Ahead of India's much-anticipated Asia Cup 2022 opener against Pakistan, head coach Rahul Dravid is set to join the squad. The former India captain, who is expected to reach Dubai late on Saturday (August 27) night, will be in the dressing room during the clash against the arch-rivals. Cricbuzz also understands that VVS Laxman, who was named interim coach in the absence of Dravid, will fly back home. It is learnt that his return flight is on Saturday night itself and he will not be with the side for their tournament opener on Sunday. He is returning home tonight, said a source in Dubai. Laxman's presence in Dubai was necessitated as Dravid, who tested positive for COVID-19, could not travel with the Indian side on August 23. Mr. Laxman has linked up with the squad in Dubai along with vice-captain Mr. KL Rahul, Mr. Deepak Hooda and Mr. Avesh Khan, who travelled from Harare, the Board of Control for Cricket in India (BCCI) had said on Laxman's arrival in Dubai from Harare while naming him the interim coach.",height=30)
-    # button = st.button("Summarize")    
-    # with st.spinner("Generating Summary.."):
-    #     if button and sentence:
-    #         chunks = generate_chunks(sentence)
-    #         res = summarizer(chunks,
-    #                          max_length=max, 
-    #                          min_length=min
-    #                          )
-    #         text = ' '.join([summ['summary_text'] for summ in res])
-    #         st.write(HTML_WRAPPER_textsum.format(text),unsafe_allow_html=True)            
+    summarizer = load_summarizer()
+    st3_31, st3_32, st3_33 = st.columns([1,1,2]) 
+    min = st3_31.slider('Minimum words in the summary', 10, 450, step=10, value=50)
+    max = st3_32.slider('Maximum words in the summary', 50, 500, step=10, value=150)
+    sentence = st.text_area('Please paste your article :',"Ahead of India's much-anticipated Asia Cup 2022 opener against Pakistan, head coach Rahul Dravid is set to join the squad. The former India captain, who is expected to reach Dubai late on Saturday (August 27) night, will be in the dressing room during the clash against the arch-rivals. Cricbuzz also understands that VVS Laxman, who was named interim coach in the absence of Dravid, will fly back home. It is learnt that his return flight is on Saturday night itself and he will not be with the side for their tournament opener on Sunday. He is returning home tonight, said a source in Dubai. Laxman's presence in Dubai was necessitated as Dravid, who tested positive for COVID-19, could not travel with the Indian side on August 23. Mr. Laxman has linked up with the squad in Dubai along with vice-captain Mr. KL Rahul, Mr. Deepak Hooda and Mr. Avesh Khan, who travelled from Harare, the Board of Control for Cricket in India (BCCI) had said on Laxman's arrival in Dubai from Harare while naming him the interim coach.",height=30)
+    button = st.button("Summarize")    
+    with st.spinner("Generating Summary.."):
+        if button and sentence:
+            chunks = generate_chunks(sentence)
+            res = summarizer(chunks,
+                              max_length=max, 
+                              min_length=min
+                              )
+            text = ' '.join([summ['summary_text'] for summ in res])
+            st.write(HTML_WRAPPER_textsum.format(text),unsafe_allow_html=True)            
 
 @st.experimental_singleton
 def get_models():
