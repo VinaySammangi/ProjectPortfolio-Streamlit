@@ -27,8 +27,7 @@ from spacy import displacy
 import en_core_web_sm
 #new packages
 from transformers import pipeline
-from transformers import BlenderbotTokenizer
-from transformers import BlenderbotForConditionalGeneration
+from transformers import BlenderbotSmallTokenizer, BlenderbotSmallForConditionalGeneration
 from streamlit_chat import message as st_message
 
 nltk.download('punkt')
@@ -97,12 +96,12 @@ st.markdown("""
         """, unsafe_allow_html=True)
 
 
-st.markdown("""
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-            """, unsafe_allow_html=True)
+# st.markdown("""
+#             <style>
+#             #MainMenu {visibility: hidden;}
+#             footer {visibility: hidden;}
+#             </style>
+#             """, unsafe_allow_html=True)
             
 st.markdown("<i><text style='text-align: left; color:orange;'> Please view this website on either desktop or laptop</text></i>",unsafe_allow_html=True)
 st.markdown("<h1 width: fit-content; style='text-align: center; color: white; background-color:#0083b8;'>Project Portfolio - Vinay Sammangi</h1>", unsafe_allow_html=True)        
@@ -336,11 +335,11 @@ def get_chat_models():
     # it may be necessary for other frameworks to cache the model
     # seems pytorch keeps an internal state of the conversation
     print("00")
-    model_name = "facebook/blenderbot-400M-distill"
+    model_name = "facebook/blenderbot_small-90M"
     print("0")
-    tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
+    tokenizer = BlenderbotSmallTokenizer.from_pretrained(model_name)
     print(1)
-    model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
+    model = BlenderbotSmallForConditionalGeneration.from_pretrained(model_name)
     print(2)
     return tokenizer, model
 
