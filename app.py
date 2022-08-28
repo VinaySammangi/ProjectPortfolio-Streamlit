@@ -103,6 +103,7 @@ st.markdown("""
             footer {visibility: hidden;}
             </style>
             """, unsafe_allow_html=True)
+            
 st.markdown("<i><text style='text-align: left; color:orange;'> Please view this website on either desktop or laptop</text></i>",unsafe_allow_html=True)
 st.markdown("<h1 width: fit-content; style='text-align: center; color: white; background-color:#0083b8;'>Project Portfolio - Vinay Sammangi</h1>", unsafe_allow_html=True)        
 set_page_container_style()
@@ -334,9 +335,13 @@ def _textsummarizer():
 def get_models():
     # it may be necessary for other frameworks to cache the model
     # seems pytorch keeps an internal state of the conversation
+    print(1)
     model_name = "facebook/blenderbot-400M-distill"
+    print(2)
     tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
+    print(3)
     model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
+    print(4)
     return tokenizer, model
 
 def _chatbot():
