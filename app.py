@@ -19,6 +19,16 @@ from st_aggrid import GridOptionsBuilder, AgGrid
 from StockpriceForecasting.api_stockprice import *
 from RecommendationEngine.content_based import *
 import time
+import pickle
+import nltk
+nltk.download('punkt')
+from textblob import TextBlob
+import spacy
+from spacy import displacy
+import en_core_web_sm
+nlp = en_core_web_sm.load()
+
+HTML_WRAPPER = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem">{}</div>"""
 
 BACKGROUND_COLOR = 'white'
 COLOR = 'black'
@@ -206,9 +216,6 @@ def _stockpriceforecasting():
         st1_32.markdown("<i> <h5 style='text-align: center; color:gray;'> Forecasts are generated between 10:00 and 15:30 EST during the market open days </h5> </i>",unsafe_allow_html=True)
     
 
-def _nlp_applications():
-    pass
-
 @st.cache(allow_output_mutation=True)
 def _load_netflix_movies():
     return pd.read_csv("RecommendationEngine/movies_data.csv")
@@ -235,17 +242,100 @@ def _netflix_recommendationengine():
             st3_22.markdown(str(i+1)+'. '+j)
     st3_21.image('imgs/netflix_recommendation.png',use_column_width=True)
 
-    
-tab1, tab2, tab3, tab4 = st.tabs(["1. Netflix Recommendation System","2. NLP Applications","3. Stock Price Forecasting Tool","4. NASA - Geospatial Analysis"])
 
-with tab1:
-    _netflix_recommendationengine()
+def _sentimentanalysis():
+    def get_sentiment(value):
+        if value > 0:
+            return("😃 Positive")
+        elif value < 0:
+            return("😏 Negative")
+        else:
+            return("😐 Neutral")
+    st.caption("""
+        Sentiment analysis is a natural language processing (NLP) technique 
+        used to determine whether text is positive, negative or neutral. Sentiment analysis is also known as “opinion mining” or “emotion artificial intelligence”. We can use it in e-commerce, politics, marketing, advertising, market research for example.
+        """)
+    text = st.text_input("Input text", "This movie is awesome. The acting is really bad though.")
+    blob = TextBlob(text)
     
-with tab2:
+    st.write("Sentiment:",get_sentiment(blob.sentiment.polarity))
+    if blob.sentiment.subjectivity > 0.5:
+        st.write("Personal opinion: ✅")
+    else:
+        st.write("Personal opinion: ❌")
+    
+    st.write(blob.sentiment)
+
+def _toxicityranking():
+    pass
+
+def _chatbot():
+    pass
+
+def _textsummarizer():
+    pass
+
+def analyze_text(text):
+	return nlp(text)
+
+def _nerproject():
+    st.subheader("Named Entity Recog with Spacy")
+    raw_text = st.text_area("Enter Text Here","Type Here")
+    if st.button("Analyze"):
+        docx = analyze_text(raw_text)
+        html = displacy.render(docx,style="ent")
+        html = html.replace("\n\n","\n")
+        st.write(HTML_WRAPPER.format(html),unsafe_allow_html=True)
+        
+    # raw_text = st.text_area("Enter Text","")
+    # if raw_text != "":
+    #     docx = nlp(raw_text)
+    #     print(docx)
+    #     spacy_streamlit.visualize_ner(docx, labels = nlp.get_pipe('ner').labels)
+
+def _nlp_applications():
+    with st.expander("1.1. Netflix Recommendation System"):
+        st.caption("""
+            Content based - uses TF-IDF to recommend netflix movies.
+            """)        
+        _netflix_recommendationengine()
+    
+    with st.expander("1.2. Sentiment Analysis"):
+        _sentimentanalysis()
+        
+    with st.expander("1.3. Named Entity Recognition"):
+        st.markdown("""
+                 <i>A bidirectional LSTM-CNN-CRF model for sequence labeling trained on the CoNLL named entity recognition dataset</i>
+        """,unsafe_allow_html=True)
+        _nerproject()
+        
+    with st.expander("1.4. Text Summarizer"):
+        st.markdown("""
+                 <i>A bidirectional LSTM-CNN-CRF model for sequence labeling trained on the CoNLL named entity recognition dataset</i>
+        """,unsafe_allow_html=True)
+        _textsummarizer()
+
+    with st.expander("1.5. Neural Chatbot"):
+        st.markdown("""
+                 <i>A Seq2Seq model with attention mechanism trained on the Cornell movie dialog corpus</i>
+        """,unsafe_allow_html=True)
+        _chatbot()
+    
+    with st.expander("1.6. Severity of Toxic Comments"):
+        st.markdown("""
+                 <i>An ensemble model comprising DistilBERT and Ridge to rank relative ratings of toxicity between comments</i>
+        """,unsafe_allow_html=True)
+        _toxicityranking()
+    
+        
+tab1, tab2, tab3, tab4 = st.tabs(["1. NLP Applications","2. Stock Price Forecasting Tool","3. CV Applications","4. NASA - Geospatial Analysis"])
+
+    
+with tab1:
     _nlp_applications()
     
-with tab3:
-    # pass
-    _stockpriceforecasting()
+with tab2:
+    pass
+    # _stockpriceforecasting()
 
        

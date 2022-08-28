@@ -11,3 +11,6 @@ nltk==3.7
 tweepy==4.10.0
 yfinance==0.1.70
 scikit-learn==1.1.1
+textblob==0.17.1
+spacy==3.4.1
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.0.0/en_core_web_sm-3.0.0.tar.gz#egg=en_core_web_sm
