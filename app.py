@@ -330,46 +330,47 @@ def _textsummarizer():
             text = ' '.join([summ['summary_text'] for summ in res])
             st.write(HTML_WRAPPER_textsum.format(text),unsafe_allow_html=True)            
 
-# @st.experimental_singleton
-@st.cache(allow_output_mutation=True)
-def get_models():
+
+@st.experimental_singleton
+def get_chat_models():
     # it may be necessary for other frameworks to cache the model
     # seems pytorch keeps an internal state of the conversation
-    print(1)
     model_name = "facebook/blenderbot-400M-distill"
-    print(2)
     tokenizer = BlenderbotTokenizer.from_pretrained(model_name)
-    print(3)
+    print(1)
     model = BlenderbotForConditionalGeneration.from_pretrained(model_name)
-    print(4)
+    print(2)
     return tokenizer, model
 
+
 def _chatbot():
-    st3_41, st3_42 = st.columns([9,1]) 
-    if "history" not in st.session_state:
-        st.session_state.history = []
-        
+    # st3_41, st3_42 = st.columns([9,1]) 
     def generate_answer():
-        tokenizer, model = get_models()
+        print("chat models start")
+        tokenizer, model = get_chat_models()
+        print("chat models end")
         user_message = st.session_state.input_text
+        print(3)
         inputs = tokenizer(st.session_state.input_text, return_tensors="pt")
+        print(4)
         result = model.generate(**inputs)
+        print(5)
         message_bot = tokenizer.decode(
             result[0], skip_special_tokens=True
         )  # .replace("<s>", "").replace("</s>", "")
-    
-        st.session_state.history.append({"message": user_message, "is_user": True})
-        st.session_state.history.append({"message": message_bot, "is_user": False})
-    
-    
-    st3_41.text_input("Talk to the bot",key="input_text", on_change=generate_answer)
-    click_ = st3_42.button('Restart chat')    
-    if click_:
-        st.session_state.history = []
+        print(6)    
+        st.session_state.chat_history.append({"message": user_message, "is_user": True})
+        st.session_state.chat_history.append({"message": message_bot, "is_user": False})
 
-        
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+
+    st.text_input("Talk to the bot",key="input_text", on_change=generate_answer)
+    # click_ = st3_42.button('Restart chat')    
+    # if click_:
+    #     st.session_state.history = []    
     i = 0
-    for chat in st.session_state.history[::-1]:
+    for chat in st.session_state.chat_history[::-1]:
         st_message(**chat,key="chatbot_"+str(i))  # unpacking
         i+=1    
     
