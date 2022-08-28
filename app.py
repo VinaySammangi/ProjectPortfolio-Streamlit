@@ -413,7 +413,8 @@ def _nlp_applications():
         st.caption("""
                  <i>Streamlit-Chat is a simple component, which provides a chat-app like interface, which makes a chatbot deployed on Streamlit have a cool UI.</i>
         """,unsafe_allow_html=True)
-        _chatbot()
+        pass
+        # _chatbot()
     
     with st.expander("1.6. Machine Translation"):
         st.markdown("""
