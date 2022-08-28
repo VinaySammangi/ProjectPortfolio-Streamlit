@@ -419,7 +419,7 @@ with tab1:
     _nlp_applications()
     
 with tab2:
-    pass
-    # _stockpriceforecasting()
+    # pass
+    _stockpriceforecasting()
 
        
