@@ -284,7 +284,8 @@ def _nerproject():
         html = html.replace("\n\n","\n")
         st.write(HTML_WRAPPER.format(html),unsafe_allow_html=True)
 
-@st.cache(allow_output_mutation=True)
+# @st.cache(allow_output_mutation=True)
+@st.experimental_singleton
 def load_summarizer():
     model = pipeline("summarization")
     return model
@@ -342,14 +343,9 @@ def get_chat_models():
 
 def _chatbot():
     chatbot_tokenizer, chatbot_model = get_chat_models()
-    st3_41, st3_42, st3_43 = st.columns([9,1,1]) 
+    st3_41, st3_42, st3_43 = st.columns([4,1,4])
     
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
-    
-    st3_41.text_input("Talk to the bot",key="input_text")
-    click_ = st3_43.button('Run')    
-    if click_:
+    def generate_answer():
         user_message = st.session_state.input_text
         inputs = chatbot_tokenizer(st.session_state.input_text, return_tensors="pt")
         result = chatbot_model.generate(**inputs)
@@ -358,6 +354,12 @@ def _chatbot():
         )  # .replace("<s>", "").replace("</s>", "")
         st.session_state.chat_history.append({"message": user_message, "is_user": True})
         st.session_state.chat_history.append({"message": message_bot, "is_user": False})
+        st.session_state.input_text = ""
+        
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+    
+    st3_43.text_input("Talk to the bot here",key="input_text",on_change=generate_answer)
                   
     i = 0
     for chat in st.session_state.chat_history[::-1]:
