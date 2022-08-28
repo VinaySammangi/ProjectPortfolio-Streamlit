@@ -96,12 +96,12 @@ st.markdown("""
         """, unsafe_allow_html=True)
 
 
-# st.markdown("""
-#             <style>
-#             #MainMenu {visibility: hidden;}
-#             footer {visibility: hidden;}
-#             </style>
-#             """, unsafe_allow_html=True)
+st.markdown("""
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """, unsafe_allow_html=True)
             
 st.markdown("<i><text style='text-align: left; color:orange;'> Please view this website on either desktop or laptop</text></i>",unsafe_allow_html=True)
 st.markdown("<h1 width: fit-content; style='text-align: center; color: white; background-color:#0083b8;'>Project Portfolio - Vinay Sammangi</h1>", unsafe_allow_html=True)        
@@ -334,42 +334,28 @@ def _textsummarizer():
 def get_chat_models():
     # it may be necessary for other frameworks to cache the model
     # seems pytorch keeps an internal state of the conversation
-    print("00")
     model_name = "facebook/blenderbot_small-90M"
-    print("0")
     tokenizer = BlenderbotSmallTokenizer.from_pretrained(model_name)
-    print(1)
     model = BlenderbotSmallForConditionalGeneration.from_pretrained(model_name)
-    print(2)
     return tokenizer, model
 
 
 def _chatbot():
-    print("00000")
     chatbot_tokenizer, chatbot_model = get_chat_models()
-    st3_41, st3_42 = st.columns([9,1]) 
-        
-    print("0000")
-
+    st3_41, st3_42, st3_43 = st.columns([9,1,1]) 
+    
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
-    print("000")
     
     st3_41.text_input("Talk to the bot",key="input_text")
-    click_ = st3_42.button('Run')    
+    click_ = st3_43.button('Run')    
     if click_:
-        print("chat models start")
-        print("chat models end")
         user_message = st.session_state.input_text
-        print(3)
         inputs = chatbot_tokenizer(st.session_state.input_text, return_tensors="pt")
-        print(4)
         result = chatbot_model.generate(**inputs)
-        print(5)
         message_bot = chatbot_tokenizer.decode(
             result[0], skip_special_tokens=True
         )  # .replace("<s>", "").replace("</s>", "")
-        print(6)    
         st.session_state.chat_history.append({"message": user_message, "is_user": True})
         st.session_state.chat_history.append({"message": message_bot, "is_user": False})
                   
