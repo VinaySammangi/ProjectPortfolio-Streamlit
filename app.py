@@ -80,13 +80,13 @@ st.set_page_config(page_title="Vinay Sammangi - Project Portfolio",page_icon=im,
 # Remove whitespace from the top of the page and sidebar
 st.markdown("""
         <style>
-               .css-18e3th9 {
+                .css-18e3th9 {
                     padding-top: 1rem;
                     padding-bottom: 10rem;
                     padding-left: 5rem;
                     padding-right: 5rem;
                 }
-               .css-1d391kg {
+                .css-1d391kg {
                     padding-top: 3.5rem;
                     padding-right: 1rem;
                     padding-bottom: 3.5rem;
@@ -192,7 +192,7 @@ def _stockpriceforecasting():
     header=dict(values=list(tweets_data.columns),
                 align='left'),
     cells=dict(values=tweets_data.transpose().values.tolist(),
-               align='left',fill_color=[colors]))
+                align='left',fill_color=[colors]))
         ])
     fig.update_layout(margin=dict(l=40, r=0, b=40, t=4))
     if (last_hour>9 and last_hour < 15) or (last_hour==15 and last_minute==0):    
@@ -258,10 +258,6 @@ def _sentimentanalysis():
             return("😏 Negative")
         else:
             return("😐 Neutral")
-    st.caption("""
-        Sentiment analysis is a natural language processing (NLP) technique 
-        used to determine whether text is positive, negative or neutral. Sentiment analysis is also known as “opinion mining” or “emotion artificial intelligence”. We can use it in e-commerce, politics, marketing, advertising, market research for example.
-        """)
     text = st.text_input("Input text", "This movie is awesome. The acting is really bad though.")
     blob = TextBlob(text)
     
@@ -274,7 +270,7 @@ def _sentimentanalysis():
     st.write(blob.sentiment)
 
 def analyze_text(text):
-	return nlp(text)
+ 	return nlp(text)
 
 def _nerproject():
     raw_text = st.text_area("Input Here","Ahead of India's much-anticipated Asia Cup 2022 opener against Pakistan, head coach Rahul Dravid is set to join the squad. The former India captain, who is expected to reach Dubai late on Saturday (August 27) night, will be in the dressing room during the clash against the arch-rivals. Cricbuzz also understands that VVS Laxman, who was named interim coach in the absence of Dravid, will fly back home. It is learnt that his return flight is on Saturday night itself and he will not be with the side for their tournament opener on Sunday. He is returning home tonight, said a source in Dubai.",height=30)
@@ -381,40 +377,44 @@ def _nlp_applications():
         _netflix_recommendationengine()
     
     with st.expander("1.2. Sentiment Analysis"):
+        st.caption("""
+        Sentiment analysis is a natural language processing (NLP) technique 
+        used to determine whether text is positive, negative or neutral. Sentiment analysis is also known as “opinion mining” or “emotion artificial intelligence”. We can use it in e-commerce, politics, marketing, advertising, market research for example.
+        """)
         _sentimentanalysis()
         
     with st.expander("1.3. Named Entity Recognition"):
         st.caption("""
-                 <i>Named entity recognition (NER) - sometimes referred to as entity chunking, extraction, or identification — is the task of identifying and categorizing key information (entities) in text.</i>
+                  <i>Named entity recognition (NER) - sometimes referred to as entity chunking, extraction, or identification — is the task of identifying and categorizing key information (entities) in text.</i>
         """,unsafe_allow_html=True)
         _nerproject()
         
     with st.expander("1.4. Text Summarizer"):
         st.caption("""
-                 <i>Summarization is the task of producing a shorter version of a document while preserving its important information. Some models can extract text from the original input, while other models (used here) can generate entirely new text.</i>
+                  <i>Summarization is the task of producing a shorter version of a document while preserving its important information. Some models can extract text from the original input, while other models (used here) can generate entirely new text.</i>
         """,unsafe_allow_html=True)
-        _textsummarizer()
-
+        # _textsummarizer()
+ 
     with st.expander("1.5. Neural Chatbot"):
         st.caption("""
-                 <i>Streamlit-Chat is a simple component, which provides a chat-app like interface, which makes a chatbot deployed on Streamlit have a cool UI.</i>
+                  <i>Streamlit-Chat is a simple component, which provides a chat-app like interface, which makes a chatbot deployed on Streamlit have a cool UI.</i>
         """,unsafe_allow_html=True)
-        _chatbot()
+        # _chatbot()
     
-    with st.expander("1.6. Machine Translation"):
-        st.markdown("""
-                 <i>A Seq2Seq model with attention mechanism trained on the Cornell movie dialog corpus</i>
-        """,unsafe_allow_html=True)
-        _machinetranslation()
+    # with st.expander("1.6. Machine Translation"):
+    #     st.markdown("""
+    #               <i>A Seq2Seq model with attention mechanism trained on the Cornell movie dialog corpus</i>
+    #     """,unsafe_allow_html=True)
+    #     _machinetranslation()
 
-    with st.expander("1.7. Severity of Toxic Comments"):
-        st.markdown("""
-                 <i>An ensemble model comprising DistilBERT and Ridge to rank relative ratings of toxicity between comments</i>
-        """,unsafe_allow_html=True)
-        _toxicityranking()
+    # with st.expander("1.7. Severity of Toxic Comments"):
+    #     st.markdown("""
+    #               <i>An ensemble model comprising DistilBERT and Ridge to rank relative ratings of toxicity between comments</i>
+    #     """,unsafe_allow_html=True)
+    #     _toxicityranking()
     
         
-tab1, tab2, tab3, tab4 = st.tabs(["1. NLP Applications","2. Stock Price Forecasting Tool","3. CV Applications","4. NASA - Geospatial Analysis"])
+tab1, tab2, tab3 = st.tabs(["1. NLP Applications","2. Stock Price Forecasting Tool","3. NASA - Geospatial Analysis"])
 
     
 with tab1:

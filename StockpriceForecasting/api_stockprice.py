@@ -32,6 +32,7 @@ from datetime import datetime
 from pytz import timezone
 import time
 import pytz
+import streamlit as st
 
 pkl_folder = "StockpriceForecasting/pkl/"
 ticker_pattern = re.compile(r'(^\$[A-Z]+|^\$ES_F)')
@@ -136,9 +137,13 @@ def arrange_text(ds):
     ds['text'] = ds['text'].apply(remove_stopwords)
     return ds
 
+@st.cache(allow_output_mutation=True)
+def get_picklefile_stock(path):
+    return pickle.load(open(pkl_folder+path, 'rb'))
+
 def get_tweet_sentiments(ds):
-    vec = pickle.load(open(pkl_folder+"sentiment/vectorizer.pkl", 'rb'))
-    nb_model = pickle.load(open(pkl_folder+"sentiment/sentiment_logistic_cls.pkl", 'rb'))
+    vec = get_picklefile_stock("sentiment/vectorizer.pkl")
+    nb_model = get_picklefile_stock("sentiment/sentiment_logistic_cls.pkl")
     sentiments = []
     for text in ds["text"]:
         sentiments.append(nb_model.predict(vec.transform([text]))[0])
@@ -153,12 +158,11 @@ def get_technical_forecasts(company_data,tickerSymbol):
     del company_data_ta["time"]
     company_data_ta = company_data_ta.ffill().bfill().tail(1)
     last_close = list(company_data_ta['close'])[0]
-    scaler = pickle.load(open(pkl_folder+"scalers/scaler_"+tickerSymbol+".pkl","rb"))
+    scaler = get_picklefile_stock("scalers/scaler_"+tickerSymbol+".pkl")
     #company_data_ta = scaler.transform(company_data_ta.to_numpy())
     company_data_ta = scaler.transform(company_data_ta)
-    regression_models = []
 
-    reg_models = [pickle.load(open(pkl_folder+tickerSymbol+"/reg/"+x,"rb")) for x in os.listdir(pkl_folder+tickerSymbol+"/reg") if x.endswith(".pkl")]
+    reg_models = [get_picklefile_stock(tickerSymbol+"/reg/"+x) for x in os.listdir(pkl_folder+tickerSymbol+"/reg") if x.endswith(".pkl")]
     reg_price_forecasts = []
     reg_price_directions = []
     for reg_model in reg_models:
@@ -169,7 +173,7 @@ def get_technical_forecasts(company_data,tickerSymbol):
         else:
             reg_price_directions.append("Decrease")
 
-    cls_models = [pickle.load(open(pkl_folder+tickerSymbol+"/cls/"+x,"rb")) for x in os.listdir(pkl_folder+tickerSymbol+"/cls") if x.endswith(".pkl")]
+    cls_models = [get_picklefile_stock(tickerSymbol+"/cls/"+x) for x in os.listdir(pkl_folder+tickerSymbol+"/cls") if x.endswith(".pkl")]
     cls_price_directions = []    
     for cls_model in cls_models:
         forecast = cls_model.predict(company_data_ta)[0]
