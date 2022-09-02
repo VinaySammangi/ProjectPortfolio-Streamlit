@@ -393,13 +393,13 @@ def _nlp_applications():
         st.caption("""
                   <i>Summarization is the task of producing a shorter version of a document while preserving its important information. Some models can extract text from the original input, while other models (used here) can generate entirely new text.</i>
         """,unsafe_allow_html=True)
-        # _textsummarizer()
+        _textsummarizer()
  
     with st.expander("1.5. Neural Chatbot"):
         st.caption("""
                   <i>Streamlit-Chat is a simple component, which provides a chat-app like interface, which makes a chatbot deployed on Streamlit have a cool UI.</i>
         """,unsafe_allow_html=True)
-        # _chatbot()
+        _chatbot()
     
     # with st.expander("1.6. Machine Translation"):
     #     st.markdown("""
